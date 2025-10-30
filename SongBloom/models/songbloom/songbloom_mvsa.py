@@ -150,7 +150,7 @@ class MVSA_DiTAR(StreamingModule):
             causal=False,
             ff_kwargs={"dim_ff": dim * hidden_scale, "no_bias": True},
             global_cond_dim=self.dim if self.time_cond_type=="adaLN" else None,
-            rotary_base_val = rotary_base_val,
+            rotary_base_val = 20000,
             # init_std=init_std
         )
         self.nar_dit.gradient_checkpointing_enable()

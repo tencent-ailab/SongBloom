@@ -19,7 +19,7 @@ class AudioTokenizerConditioner(WaveformConditioner):
         self.max_len = max_len
         self.use_cache = cache
         
-        self.tokenizer = audio_tokenizer
+        self.__dict__['tokenizer'] = audio_tokenizer
         # breakpoint()
         
         # TODO if cached and not load vae, receive a dict instead
@@ -52,10 +52,12 @@ class AudioTokenizerConditioner(WaveformConditioner):
             if self.use_cache:
                 audio_latents = wav.transpose(-1,-2)
             else:
+                self.tokenizer.to(device=self.output_proj.weight.device)
                 with torch.no_grad():
-                    audio_latents = self.tokenizer.encode(wav).transpose(-1,-2)
+                    with torch.cuda.amp.autocast(enabled=False):
+                        audio_latents = self.tokenizer.encode(wav.float()).transpose(-1,-2)
                     # print('transform wav to vae')
-            audio_latents = self.output_proj(audio_latents)
+            audio_latents = self.output_proj(audio_latents.to(self.output_proj.weight.dtype))
 
         # print(audio_latents.shape)
         if self.max_len is not None:

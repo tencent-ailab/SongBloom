@@ -7,10 +7,12 @@ from huggingface_hub import hf_hub_download
 
 os.environ['DISABLE_FLASH_ATTN'] = "1"
 from SongBloom.models.songbloom.songbloom_pl import SongBloom_Sampler
+from normalize_lyrics import clean_lyrics
 
 NAME2REPO = {
     "songbloom_full_150s" : "CypressYang/SongBloom",
-    "songbloom_full_150s_dpo" : "CypressYang/SongBloom"
+    "songbloom_full_150s_dpo" : "CypressYang/SongBloom",
+    "songbloom_full_240s" : "CypressYang/SongBloom_long",
 }
 
 def hf_download(model_name="songbloom_full_150s", local_dir="./cache", **kwargs):
@@ -61,17 +63,18 @@ def main():
     parser.add_argument("--input-jsonl", type=str, required=True)
     parser.add_argument("--output-dir", type=str, default="./output")
     parser.add_argument("--n-samples", type=int, default=2)
-    parser.add_argument("--dtype", type=str, default='float32', choices=['float32', 'bfloat16'])
-    
+    parser.add_argument("--dtype", type=str, default='float32', choices=['float32', 'bfloat16']) # There appear to be some bugs in FP16
+    parser.add_argument("--device", type=str, default='cuda:0' ) # "cpu"
     args = parser.parse_args()
 
     hf_download(args.model_name, args.local_dir)
     cfg = load_config(f"{args.local_dir}/{args.model_name}.yaml", parent_dir=args.local_dir)
   
-    cfg.max_dur = cfg.max_dur + 20
+    cfg.max_dur = cfg.max_dur + 10
     
-    dtype = torch.float32 if args.dtype == 'float32' else torch.bfloat16
-    model = SongBloom_Sampler.build_from_trainer(cfg, strict=True, dtype=dtype)
+    dtype = getattr(torch, args.dtype)
+    device = torch.device(args.device)
+    model = SongBloom_Sampler.build_from_trainer(cfg, strict=False, dtype=dtype, device=device)
     model.set_generation_params(**cfg.inference)
           
     os.makedirs(args.output_dir, exist_ok=True)
@@ -82,6 +85,7 @@ def main():
     for test_sample in input_lines:
         # print(test_sample)
         idx, lyrics, prompt_wav = test_sample["idx"], test_sample["lyrics"], test_sample["prompt_wav"]
+        # lyrics = clean_lyrics(lyrics) # This function can handle some wrong cases of lyrics input (not all)
 
         prompt_wav, sr = torchaudio.load(prompt_wav)
         if sr != model.sample_rate:

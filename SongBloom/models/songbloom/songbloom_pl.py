@@ -81,7 +81,7 @@ class SongBloom_Sampler:
         self._progress_callback: tp.Optional[tp.Callable[[int, int], None]] = None
 
     @classmethod
-    def build_from_trainer(cls, cfg, strict=True, dtype=torch.float32):
+    def build_from_trainer(cls, cfg, strict=True, dtype=torch.float32, device=None):
         model_light = SongBloom_PL(cfg)
         incompatible = model_light.load_state_dict(torch.load(cfg.pretrained_path, map_location='cpu'), strict=strict)
         
@@ -89,10 +89,16 @@ class SongBloom_Sampler:
     
         print(incompatible)
         
-        model_light = model_light.eval().cuda().to(dtype=dtype)  
+        model_light = model_light.eval()  
+        if device is None:
+            model_light = model_light.cuda()
+        else:
+            model_light = model_light.to(device)
+        
+        
         model = cls(
             compression_model = model_light.vae,
-            diffusion = model_light.model,
+            diffusion = model_light.model.to(dtype=dtype),
             lyric_processor_key = lyric_processor_key,
             max_duration = cfg.max_dur,
             prompt_duration = cfg.sr * cfg.train_dataset.prompt_len
@@ -133,7 +139,8 @@ class SongBloom_Sampler:
         print(self.generation_params)
         latent_seq, token_seq = self.diffusion.generate(None, attributes, **self.generation_params)
         # print(token_seq)
-        audio_recon = self.compression_model.decode(latent_seq).float()
+        # audio_recon = self.compression_model.decode(latent_seq.float())
+        audio_recon = self.compression_model.decode(latent_seq.float(), chunked=True)
         
         return audio_recon
     

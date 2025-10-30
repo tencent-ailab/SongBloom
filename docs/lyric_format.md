@@ -1,13 +1,12 @@
 ## Lyric Format
-_(You can ask GPT with the following prompt, please customize the content based on your requirements and double-check the generated lyrics, especially "," and ".")_
 
-Please help me write original lyrics, which meet the following requirements:
+* The lyrics should include both vocal and non-vocal sections. Vocal sections must contain a structure flag and lyric text, while non-vocal sections should only have structure flags.
+* Each vocal section should be prefixed with `[verse]`, `[chorus]`, or `[bridge]` to indicate the structure of the vocal section.
+* Non-vocal sections should be represented with `[intro]`, `[inst]`, or `[outro]` (optional). These structure flags should be repeated based on the duration of the non-vocal sections. Short non-vocal sections can be omitted.
+* Lyric text should use a period (".") to separate sentences and a comma (",") to separate different sections, appearing only at the end of vocal or non-vocal sections (please double-check this carefully!).
+* The lyrics must include at least one vocal section, and the total song length should be around 2 minutes.
 
-- The lyrics contain both vocal and non-vocal sections. Vocal sections must contain a structure flag and lyric text, while non-vocal sections contain only structure flag;
-- [verse] / [chorus] （sometimes [bridge]) is prepended to each vocal section, indicating the structure of vocal ragion;
-- [intro] / [inst] / [outro] is used to fulfill the non-vocal section (optional). The structure flag will be repeated based on the duration of non-vocal section (eg., 5-second intro, then [intro] × 5). Short non-vocal sections can be ignored;
-- For lyric text, "." is used to separate each sentence. "," is used to separate each section (only appears at the end of vocal and non-vocal sections except the last one);
-- The lyrics should contain at least one vocal section, and the expected length of song should be around 2 minutes. 
+
 
 (CN)
 

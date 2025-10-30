@@ -1,3 +1,3 @@
 source set_env.sh
 
-python3 infer.py --input-jsonl example/test.jsonl
+python3 infer.py --model-name songbloom_full_150s --input-jsonl example/test.jsonl

@@ -27,13 +27,16 @@ Experimental results demonstrate that SongBloom outperforms existing methods acr
 | -------------------- | ---- | ---------- | ----------- | -------------------------------------------- |
 | songbloom_full_150s  | 2B   | 2m30s      | 10s wav     | [link](https://huggingface.co/CypressYang/SongBloom) |
 | songbloom_full_150s_dpo  | 2B   | 2m30s      | 10s wav     | [link](https://huggingface.co/CypressYang/SongBloom) |
-| songbloom_mulan_150s | 2B   | 2m30s      | 10s wav / text description |           coming soon                           |
+| songbloom_full_240s$^{[1]}$ | 2B   | 4m     | 10s wav |        [link](https://huggingface.co/CypressYang/SongBloom_long)                           |
 | ... |      |            |             |                                              |
 
+- [1] For the **_150s** series models, each `[intro]`, `[outro]`, and `[inst]` corresponds to an expected duration of 1 second; whereas for the **_240s** series models, each token corresponds to 5 seconds (details in [docs/lyric_format](docs/lyric_format.md)).
 
 ## Updates
-- **Jun 2025**: Release the songbloom_full_150s and inference script
+- **Oct 2025**: Release songbloom_full_240s; fix bugs in half-precision inference ; Reduce GPU memory consumption during the VAE stage.
 - **Sep 2025**: Release the songbloom_full_150s model with DPO post-training
+- **Jun 2025**: Release the songbloom_full_150s and inference script
+
 
 
 
