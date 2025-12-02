@@ -50,7 +50,14 @@ class StableVAE(AbstractVAE):
         with open(vae_cfg) as f:
             config = json.load(f)
         self.vae: AudioAutoencoder = create_autoencoder_from_config(config)
-        self.vae.load_state_dict(torch.load(vae_ckpt)['state_dict'])
+
+        # Use map_location='cpu' on Apple MPS to avoid device mismatch
+        if hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+            state_dict = torch.load(vae_ckpt, map_location='cpu')['state_dict']
+        else:
+            state_dict = torch.load(vae_ckpt)['state_dict']
+        self.vae.load_state_dict(state_dict)
+
         self.sample_rate = sr
         self.rsp48k = torchaudio.transforms.Resample(sr, self.orig_sample_rate) if sr != self.orig_sample_rate else nn.Identity()
        

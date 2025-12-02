@@ -91,6 +91,24 @@ python3 infer.py --input-jsonl example/test.jsonl --dtype bfloat16
 - output-dir: Dir where the output audio saved;
 - n-samples: How many audios will be generated for each input term;
 
+## Mac Silicon
+
+Set these environment variables before running:
+
+```
+export PYTORCH_ENABLE_MPS_FALLBACK=1
+export DISABLE_FLASH_ATTN=1
+```
+
+When loading the model, explicitly pass the MPS device and use float32, not bfloat16:
+
+```
+import torch
+
+device = torch.device('mps')
+model = SongBloom_Sampler.build_from_trainer(cfg, strict=False, dtype=torch.float32, device=device)
+```
+
 ## Citation
 
 ```
